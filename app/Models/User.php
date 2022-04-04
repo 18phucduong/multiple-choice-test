@@ -46,4 +46,8 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Test::class);
     }
+    public function testResults()
+    {
+        return $this->hasMany(TestResult::class,'user_id', 'id');
+    }
 }
