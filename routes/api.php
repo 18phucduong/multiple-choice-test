@@ -3,6 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\TestController;
+use App\Http\Controllers\Api\QuestionController;
+use App\Http\Controllers\Api\AnswerController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +27,7 @@ Route::controller(AuthController::class)
     ->group(function () {
         Route::post('/login', 'login')->name('.login');
         Route::post('/signup', 'signup');
-        Route::post('/logout', 'logout')->middleware('auth:api');
+        Route::get('/logout', 'logout')->middleware('auth:api');
         Route::get('/user', 'user')->middleware('auth:api');
 });
 Route::controller(TestController::class)
@@ -31,7 +35,7 @@ Route::controller(TestController::class)
     ->name('tests')
     ->group(function () {
         Route::get('/lists', 'lish')->name('.lish');
-        Route::get('/show', 'show')->name('.show');
+        Route::get('/show/{id}', 'show')->name('.show');
         Route::post('/show-result/{id}', 'showResult')->name('.showResult');
         Route::post('/store', 'store')->middleware('auth:api');
         Route::delete('/delete/{id}', 'delete')->middleware('auth:api');
