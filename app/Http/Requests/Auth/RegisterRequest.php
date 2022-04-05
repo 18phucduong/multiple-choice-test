@@ -13,13 +13,8 @@ class RegisterRequest extends FormRequest
 	{
 		return [
             'name' => 'required',
-			'email' => 'required|max:191',
+			'email' => 'required|email|max:191',
 			'password' => 'required|max:64||confirmed'
 		];
 	}
-    // protected function failedValidation(Validator $validator) {
-    //     print_r($validator);
-    //     return response()->json($validator);
-    // }
-
 }

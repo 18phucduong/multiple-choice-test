@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\LoginRequest;
+
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\User;
@@ -13,27 +15,26 @@ class AuthController extends Controller
 {
     public function signup(RegisterRequest $request)
     {
-        $validated = $request->validated();
+        $user = User::create([
+            'name' => $request->name,
+            'email'=> $request->email,
+            'password' => $request->password
+        ]);
 
-        $validated['password'] = bcrypt($request->password);
-        $user = User::create($validated);
-
-        $accessToken = $user->createToken('authToken');
-        dd($accessToken);
+        $accessToken = $user->createToken('authToken')->accessToken;
 
         return response([ 'user' => $user, 'access_token' => $accessToken]);
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $loginData = $request->validate([
-            'email' => 'required',
-            'password' => 'required'
-        ]);
-        if (!auth()->attempt($loginData)) {
+        if (!auth()->attempt([
+            'email' => $request->email,
+            'password' => $request->password
+        ])) {
             return response(['message' => 'Invalid Credentials']);
         }
-        $accessToken = auth()->user()->createToken('authToken',['start-a-test','send-a-test']);
+        $accessToken = auth()->user()->createToken('authToken',['start-a-test','send-a-test'])->accessToken;
 
 
         return response(['user' => auth()->user(), 'access_token' => $accessToken]);
