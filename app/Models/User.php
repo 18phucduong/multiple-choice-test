@@ -44,11 +44,11 @@ class User extends Authenticatable
     ];
 
     protected function password(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => bcrypt($value),
-        );
-    }
+	{
+		return new Attribute(
+			set: fn ($value) => bcrypt($value),
+		);
+	}
 
     public function tests()
     {

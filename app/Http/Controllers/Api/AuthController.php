@@ -15,11 +15,7 @@ class AuthController extends Controller
 {
     public function signup(RegisterRequest $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email'=> $request->email,
-            'password' => $request->password
-        ]);
+        $user = User::create($request->only('name', 'email', 'password'));
 
         $accessToken = $user->createToken('authToken')->accessToken;
 
