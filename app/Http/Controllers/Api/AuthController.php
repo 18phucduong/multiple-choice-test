@@ -14,13 +14,16 @@ use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
-    public function signup(RegisterRequest $request)
+    public function signup(RegisterRequest $request): JsonResponse
     {
         $user = User::create($request->only('name', 'email', 'password'));
 
         $accessToken = $user->createToken('authToken')->accessToken;
 
-        return response([ 'user' => $user, 'access_token' => $accessToken]);
+        return response()->json([
+            'status' => 'success',
+            'accessToken' => $accessToken
+        ]);
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -29,34 +32,30 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => $request->password
         ])) {
-            return response(['message' => 'Invalid Credentials']);
+            return response()->json([
+                'status' => 'Invalid Credentials'
+            ],406);
         }
         $accessToken = auth()->user()->createToken('authToken',['start-a-test','send-a-test'])->accessToken;
 
-
-        return response()->json(['user' => auth()->user(), 'access_token' => $accessToken]);
+        return response()->json([
+            'status' => 'success',
+            'accessToken' => $accessToken
+        ]);
     }
-    public function logout(Request $request): JsonResponse
+    public function logout(): JsonResponse
     {
-        $request->user()->token()->revoke();
+        Auth::user()->token()->revoke();
         return response()->json([
             'status' => 'success',
         ]);
     }
 
-    public function user(Request $request): JsonResponse
+    public function user(): JsonResponse
     {
-        $user = Auth::user()->token();
-        dd(response()->json(
-            [
-                'success' => $user
-            ],
-        ));
-
-        return response()->json(
-            [
-                'success' => $user
-            ],
-        );
+        return response()->json([
+                'status' => 'success',
+                'user' =>  Auth::user()
+            ]);
     }
 }
