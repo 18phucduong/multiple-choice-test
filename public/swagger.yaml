@@ -1,0 +1,220 @@
+swagger: '2.0'
+info:
+  title: Multiple choice tests
+  description: No description
+  version: 1.0.0
+  contact:
+    name: Duong minh Phuc
+    email: phuc.duong@alobridge.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: 127.0.0.1
+basePath: /api
+tags:
+  - name: user
+    description: "About User: register/login/logout/get me"
+schemes:
+  - https
+  - http
+paths:
+  /auth/register:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: ''
+      operationId: createUser
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Created user object
+          required: true
+          schema:
+            $ref: "#/definitions/RegisterUser"
+      responses:
+        '200':
+          description: successful create user
+          schema:
+            $ref: "#/definitions/SuccessReturnAccessToken"
+        '400':
+          description: failed validate
+          schema:
+            $ref: "#/definitions/FailedValidateRegisterUser"
+  /auth/login:
+    post:
+      tags:
+        - user
+      summary: Login
+      description: ''
+      operationId: loginUser
+      produces:
+       - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Auth credential
+          required: true
+          schema:
+            $ref: "#/definitions/LoginUser"
+      responses:
+        '200':
+          description: Successful
+          schema:
+            $ref: "#/definitions/SuccessReturnAccessToken"
+        '400':
+          description: Failed
+          schema:
+            $ref: "#/definitions/FailedValidateLoginUser"
+
+  /auth/user:
+    get:
+      tags:
+        - user
+      summary: Get me
+      description: ''
+      operationId: loggedinUser
+      produces:
+        - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        description: AccessToken to loggin use bearer token
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Get user by access token
+          schema:
+            $ref: "#/definitions/User"
+        '401':
+          description: Wrong token
+          schema:
+            $ref: "#/definitions/FailedAccessToken"
+  /auth/logout:
+    get:
+      tags:
+        - user
+      summary: Logout
+      description: 'Revoke current token'
+      operationId: revoke Token
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: successful revoke token
+          schema:
+            $ref: "#/definitions/SuccessRevokeAccessToken"
+        '401':
+          description: Can't logout
+          schema:
+            $ref: "#/definitions/FailedAccessToken"
+definitions:
+  RegisterUser:
+    type: object
+    properties:
+      name:
+        type: string
+        maxLength: 50
+        minLength: 6
+      email:
+        type: string
+        pattern: '/(.+)@(.+)\.(.+)/i'
+      password:
+        type: "string"
+        format: password
+        maxLength: 50
+        minLength: 8
+      password_confirmation:
+        type: "string"
+        format: password
+    required:
+      - name
+      - email
+      - password
+      - password_confirmation
+  FailedValidateRegisterUser:
+    type: object
+    properties:
+      status:
+        type: string
+      errors:
+        description: FailedValidate
+        type: object
+        properties:
+          name:
+            type: string
+          email:
+            type: string
+          password:
+            type: string
+  LoginUser:
+    type: object
+    properties:
+        email:
+          type: string
+          pattern: '/(.+)@(.+)\.(.+)/i'
+        password:
+          type: string
+          format: password
+          maxLength: 50
+          minLength: 8
+    required:
+      - email
+      - password
+  FailedValidateLoginUser:
+    type: object
+    properties:
+      status:
+        type: string
+      errors:
+        type: object
+        description: FailedValidate
+        properties:
+          email:
+            type: string
+          password:
+            type: string
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: "string"
+      email:
+        type: "string"
+      email_verified_at:
+        type: string
+      created_at:
+        type: "string"
+      updated_at:
+        type: "string"
+  SuccessReturnAccessToken:
+    type: object
+    properties:
+      status:
+        type: "string"
+        description: "Success"
+      access_token:
+        type: "string"
+        description: "Access Token"
+  SuccessRevokeAccessToken:
+    type: object
+    properties:
+      status:
+        type: string
+        description: "Revoked the Acess token"
+  FailedAccessToken:
+    type: object
+    properties:
+      status:
+        type: "string"
+        description: "token not found"
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
