@@ -200,7 +200,7 @@ definitions:
       status:
         type: "string"
         description: "Success"
-      accessToken:
+      access_token:
         type: "string"
         description: "Access Token"
   SuccessRevokeAccessToken:

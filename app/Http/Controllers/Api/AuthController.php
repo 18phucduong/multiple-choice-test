@@ -6,24 +6,24 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\LoginRequest;
 
-use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use App\Traits\ApiResponser;
+use App\Traits\Tokener;
 
 class AuthController extends Controller
 {
+    use ApiResponser, Tokener;
+
     public function signup(RegisterRequest $request): JsonResponse
     {
         $user = User::create($request->only('name', 'email', 'password'));
 
-        $accessToken = $user->createToken('authToken')->accessToken;
+        $accessToken = $this->createToken($user);
 
-        return response()->json([
-            'status' => 'success',
-            'accessToken' => $accessToken
-        ]);
+        return $this->successResponse(['access_token' => $accessToken]);
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -36,16 +36,15 @@ class AuthController extends Controller
                 'status' => 'Invalid Credentials'
             ],406);
         }
-        $accessToken = auth()->user()->createToken('authToken',['start-a-test','send-a-test'])->accessToken;
 
-        return response()->json([
-            'status' => 'success',
-            'accessToken' => $accessToken
-        ]);
+        $user = auth()->user();
+        $accessToken = $this->createToken($user, ['start-a-test','send-a-test']);
+
+        return $this->successResponse(['access_token' => $accessToken]);
     }
     public function logout(): JsonResponse
     {
-        Auth::user()->token()->revoke();
+        auth()->user()->token()->revoke();
         return response()->json([
             'status' => 'success',
         ]);
@@ -55,7 +54,8 @@ class AuthController extends Controller
     {
         return response()->json([
                 'status' => 'success',
-                'user' =>  Auth::user()
+                'user' =>  auth()->user()
             ]);
     }
+
 }
