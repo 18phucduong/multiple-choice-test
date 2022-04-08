@@ -8,7 +8,7 @@ use App\Models\User;
 
 trait Tokener
 {
-	public function createToken( User $user, array $scopes = [], string $name = 'Oauth Access Token' )
+	public function createToken( User $user, array $scopes = [], string $name = 'Oauth Access Token' ): string
     {
 		return $user->createToken($name, $scopes)->accessToken;
 	}
